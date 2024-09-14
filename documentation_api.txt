@@ -1,0 +1,95 @@
+===================================================
+Auth JWT Api In laravel latest version 11
+===================================================
+
+
++++++++++++++++++++++++
+Register Api
+++++++++++++++++++++++++++++++
+			url : http://127.0.0.1:8000/api/register
+			method : POST
+			column input : 
+						{
+							"key": "name",
+							"value": "rakesh",
+							"type": "text"
+						},
+						{
+							"key": "email",
+							"value": "rp2515310@gmail.com",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "12345678",
+							"type": "text"
+						},
+						{
+							"key": "password_confirmation",
+							"value": "12345678",
+							"type": "text"
+						}
+
+++++++++++++++++++++++++++++++++++++++++++
+Login Api
+++++++++++++++++++++++++++++++++++++++++++++
+			url : http://127.0.0.1:8000/api/login
+			method : POST
+			column input : 
+						{
+							"key": "email",
+							"value": "rp2515310@gmail.com",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "12345678",
+							"type": "text"
+						}
+
++++++++++++++++++++++++
+otp verify Api
+++++++++++++++++++++++++++++++
+			url :http://127.0.0.1:8000/api/update_profile_verify
+			method : POST
+			column input : 
+						{
+							"key": "otp",
+							"value": "9827",
+							"type": "text"
+						},
+						{
+							"key": "user_id",
+							"value": "1",
+							"type": "text"
+						}						
+			"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL2xvZ2luIiwiaWF0IjoxNzI2MTY1NjkwLCJleHAiOjE3MjYxNjkyOTAsIm5iZiI6MTcyNjE2NTY5MCwianRpIjoia3pPcTZrQ3dzM2RCME02USIsInN1YiI6IjEiLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.wUepXbQPGuG6YZMrbms83AOpxnm05jZZFiHKbsZSJ5g",
+							"type": "string"
+						}
+					]
+				}
+				
+
++++++++++++++++++++++++
+logout Api
+++++++++++++++++++++++++++++++
+			url :http://127.0.0.1:8000/api/logout
+			method : POST
+									
+			"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL2xvZ2luIiwiaWF0IjoxNzI2MTY1NjkwLCJleHAiOjE3MjYxNjkyOTAsIm5iZiI6MTcyNjE2NTY5MCwianRpIjoia3pPcTZrQ3dzM2RCME02USIsInN1YiI6IjEiLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.wUepXbQPGuG6YZMrbms83AOpxnm05jZZFiHKbsZSJ5g",
+							"type": "string"
+						}
+					]
+				}
+				
+				
