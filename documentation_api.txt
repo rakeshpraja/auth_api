@@ -92,4 +92,39 @@ logout Api
 					]
 				}
 				
-				
+
++++++++++++++++++++++++
+otp verify Api
+++++++++++++++++++++++++++++++
+			url :http://127.0.0.1:8000/api/password_forgot
+			method : POST
+			column input : 
+						{
+							"key": "email",
+							"value": "abc@gmail.com",
+							"type": "text"
+						}
+											
++++++++++++++++++++++++
+otp verify Api
+++++++++++++++++++++++++++++++
+			url :http://127.0.0.1:8000/api/password_reset
+			method : POST
+			column input : 
+						{
+							"key": "email",
+							"value": "abc@gmail.com",
+							"type": ""
+						}
+						{
+							"key": "password",
+							"value": "12345678",
+							"type": "text"
+						}
+						{
+							"key": "token",
+							"value": "12345wertyu34567fgh",
+							"type": "text"
+						}
+										
+								

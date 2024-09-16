@@ -14,13 +14,17 @@ use Mail;
 use App\Mail\CustomEmail;
 use App\Mail\UpdateProfileVerifyEmail;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 
 class AuthController extends Controller
 {
-    // User registration
-    public function register() {
+   
+    public function register()
+    {
         try {
-            // Validate input data
+           
             $validator = Validator::make(request()->all(), [
                 'name' => 'required|string|max:255',
                 'email' => 'required|string|email|max:255|unique:users',
@@ -31,7 +35,7 @@ class AuthController extends Controller
                 return response()->json(['errors' => $validator->errors()], 400);
             }
 
-            // Create new user instance
+           
             $user = new User();
             $user->name = request()->name;
             $user->email = request()->email;
@@ -49,16 +53,16 @@ class AuthController extends Controller
                 'user_id' => $user->id,
                 'token' => $details['token'],
             ]);
-          
-            return response()->json(['user' => $user], 201);
 
+            return response()->json(['user' => $user], 201);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Something went wrong: ' . $e->getMessage()], 500);
         }
     }
 
-    // User login
-    public function login() {
+   
+    public function login()
+    {
         try {
             $validator = Validator::make(request()->all(), [
                 'email' => 'required|email',
@@ -74,21 +78,21 @@ class AuthController extends Controller
             }
 
             return $this->createNewToken($token);
-
         } catch (\Exception $e) {
             return response()->json(['error' => 'Something went wrong: ' . $e->getMessage()], 500);
         }
     }
 
-    // Update user profile
-    public function updateProfile() {
+   
+    public function updateProfile()
+    {
         try {
             $validator = Validator::make(request()->all(), [
                 'name' => 'required|string|max:255',
                 'email' => 'required|string|email|max:255',
                 'phone_number' => 'required|numeric',
-                'pdf_file' => 'required|mimes:pdf|max:5,242,880',
-                'image' => 'required|image|mimes:jpeg,png,jpg|max:5,242,880',
+                'pdf_file' => 'required|mimes:pdf|max:5242880', // 5MB
+                'image' => 'required|image|mimes:jpeg,png,jpg|max:5242880', // 5MB
             ]);
 
             if ($validator->fails()) {
@@ -111,11 +115,11 @@ class AuthController extends Controller
             }
 
             $user = User::where('email', request()->email)->first();
-           
-            if(!$user)
-            {
+
+            if (!$user) {
                 return response()->json(['message' => 'Not found data'], 200);
             }
+            
             $temp_user = new TempUser();
             $temp_user->user_id = $user->id;
             $temp_user->name = request()->name;
@@ -137,45 +141,44 @@ class AuthController extends Controller
                 'otp' => $details['otp'],
                 'expires_at' => Carbon::now()->addMinutes(1),
             ]);
-            
-            Mail::to($user->email)->send(new UpdateProfileVerifyEmail($details));
-           
-            return response()->json(['message' => 'OTP sent successfully'], 200);
 
+            Mail::to($user->email)->send(new UpdateProfileVerifyEmail($details));
+
+            return response()->json(['message' => 'OTP sent successfully'], 200);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Something went wrong: ' . $e->getMessage()], 500);
         }
     }
 
-   
-
-    // Logout user
-    public function logout() {
+  
+    public function logout()
+    {
         try {
-          
             auth()->guard('api')->logout();
-    
             return response()->json(['message' => 'User successfully signed out']);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Something went wrong: ' . $e->getMessage()], 500);
         }
     }
-    
 
    
-
-    // Create new JWT token
-    protected function createNewToken($token) {
-        return response()->json([
-            'access_token' => $token,
-            'token_type' => 'bearer',
-            'expires_in' => auth()->factory()->getTTL() * 60,
-            'user' => auth()->user(),
-        ]);
+    protected function createNewToken($token)
+    {
+        try {
+            return response()->json([
+                'access_token' => $token,
+                'token_type' => 'bearer',
+                'expires_in' => auth()->factory()->getTTL() * 60,
+                'user' => auth()->user(),
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Something went wrong: ' . $e->getMessage()], 500);
+        }
     }
 
-    // Verify registration token
-    public function verify($token) {
+    
+    public function verify($token)
+    {
         try {
             $otp = Otp::where('token', $token)->first();
             if (!$otp) {
@@ -188,28 +191,29 @@ class AuthController extends Controller
 
             $otp->delete();
             return response()->json(['success' => 'User verified successfully']);
-
         } catch (\Exception $e) {
             return response()->json(['error' => 'Something went wrong: ' . $e->getMessage()], 500);
         }
     }
 
-    // Verify and update profile
-    public function verifyUpdateProfile() {
+   
+    public function verifyUpdateProfile()
+    {
         try {
             $validator = Validator::make(request()->all(), [
                 'otp' => 'required',
                 'user_id' => 'required',
-               
             ]);
 
             if ($validator->fails()) {
                 return response()->json(['errors' => $validator->errors()], 400);
             }
+
             $user = User::find(request()->user_id);
             if (!$user) {
                 return response()->json(['error' => 'User not found'], 404);
             }
+
             $otp = Otp::where('otp', request()->otp)
                 ->where('user_id', request()->user_id)
                 ->latest()
@@ -228,8 +232,6 @@ class AuthController extends Controller
                 return response()->json(['error' => 'User record not found'], 400);
             }
 
-           
-
             $user->name = $temp_user->name;
             $user->phone_number = $temp_user->phone_number;
             $user->pdf_file = $temp_user->pdf_file;
@@ -240,7 +242,90 @@ class AuthController extends Controller
             TempUser::where('user_id', request()->user_id)->delete();
 
             return response()->json(['success' => 'User profile updated successfully'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Something went wrong: ' . $e->getMessage()], 500);
+        }
+    }
 
+    public function forgotPassword()
+    {
+        try {
+           
+            $validator = Validator::make(request()->all(), [
+                'email' => 'required|string|email|max:255',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json(['errors' => $validator->errors()], 400);
+            }
+
+            $user = User::where('email', request()->email)->first();
+            if (!$user) {
+                return response()->json(['message' => 'User not found'], 404);
+            }
+
+           
+            $token = Hash::make($user);
+
+            
+            DB::table('password_resets')->insert([
+                'email' => request()->email,
+                'token' => $token,
+                'created_at' => Carbon::now(),
+            ]);
+
+          
+            Mail::send('mail.password_reset', ['token' => $token], function ($message) use ($user) {
+                $message->to($user->email);
+                $message->subject('Reset Password Request');
+            });
+
+            return response()->json(['message' => 'Reset password email sent.']);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Something went wrong: ' . $e->getMessage()], 500);
+        }
+    }
+
+    public function resetPassword()
+    {
+        try {
+           
+            $validator = Validator::make(request()->all(), [
+                'email' => 'required|email',
+                'password' => 'required|min:6',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json(['errors' => $validator->errors()], 400);
+            }
+
+            
+            $passwordReset = DB::table('password_resets')
+                ->where('email', request()->email)->latest()
+                ->first();
+
+            if (!$passwordReset) {
+                return response()->json(['message' => 'Token not found'], 400);
+            }
+
+            if (request()->token != $passwordReset->token) {
+                return response()->json(['message' => 'Invalid token'], 400);
+            }
+
+          
+            $user = User::where('email', request()->email)->first();
+            if (!$user) {
+                return response()->json(['message' => 'User not found'], 404);
+            }
+
+            
+            $user->password = Hash::make(request()->password);
+            $user->save();
+
+           
+            DB::table('password_resets')->where('email', request()->email)->delete();
+
+            return response()->json(['message' => 'Password reset successfully.']);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Something went wrong: ' . $e->getMessage()], 500);
         }

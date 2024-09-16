@@ -177,7 +177,7 @@
 			"response": []
 		},
 		{
-			"name": "refresh",
+			"name": "forget password",
 			"request": {
 				"auth": {
 					"type": "bearer",
@@ -204,6 +204,65 @@
 					"path": [
 						"api",
 						"me"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "password reset",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL2xvZ2luIiwiaWF0IjoxNzI2MTY1NjkwLCJleHAiOjE3MjYxNjkyOTAsIm5iZiI6MTcyNjE2NTY5MCwianRpIjoia3pPcTZrQ3dzM2RCME02USIsInN1YiI6IjEiLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.wUepXbQPGuG6YZMrbms83AOpxnm05jZZFiHKbsZSJ5g",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "email",
+							"value": "rp2515310@gmail.com",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "12345678",
+							"type": "text"
+						},
+						{
+							"key": "token",
+							"value": "$2y$12$E8ZgadCaMw1gGLDh94UkU.Qw7rGp13UpFGNHYKqa9yMDZq2Ev.cy.",
+							"type": "text",
+							"disabled": true
+						}
+					]
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/password_reset?token=$2y$12$E8ZgadCaMw1gGLDh94UkU.Qw7rGp13UpFGNHYKqa9yMDZq2Ev.cy.",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"password_reset"
+					],
+					"query": [
+						{
+							"key": "token",
+							"value": "$2y$12$E8ZgadCaMw1gGLDh94UkU.Qw7rGp13UpFGNHYKqa9yMDZq2Ev.cy."
+						}
 					]
 				}
 			},
